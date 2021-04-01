@@ -126,10 +126,15 @@ func NewTestEnvironment() *TestEnvironment {
 	// initialize webhook here to be able to test the envtest install via webhookOptions
 	// This should set LocalServingCertDir and LocalServingPort that are used below.
 	initializeWebhookInEnvironment()
-
-	if _, err := env.Start(); err != nil {
+	var cfg *rest.Config
+	var err error
+	if cfg, err = env.Start(); err != nil {
 		panic(err)
 	}
+	if err := env.WebhookInstallOptions.Install(cfg); err != nil {
+		panic(err)
+	}
+	fmt.Println("Installed Webhooks")
 
 	options := manager.Options{
 		Scheme:             scheme.Scheme,
